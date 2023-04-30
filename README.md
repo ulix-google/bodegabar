@@ -6,6 +6,6 @@ This repository _will have_ the necessary files to modify a cheap [pull-up bar](
 
 ## Instrumentation
 
-Example of a mounted (distance) sensor using a 3D printed component (to be used to detect hand placement):
+Example of a distance sensor using a 3D printed mount (to be used to detect hand placement):
 
 ![right hand sensor](static/right_hand_sensor.gif)
