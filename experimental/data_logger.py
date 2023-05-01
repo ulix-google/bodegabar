@@ -11,8 +11,8 @@ sensor = ADC(adc_pin_0)
 us_in_second = 1000000
 # Time period in seconds.
 time_period = 0.1
-# How long is the logging session lasting in seconds. The Raspberry Pi Pico W
-# has a limit of 2MB, so each logging session cannot be huge.
+# The duration of the logging sesh in seconds. The Raspberry Pi Pico W has a
+# limit of 2MB, so each logging session cannot be huge.
 logging_length = 60
 counter_limit = logging_length / time_period
 file = open("data.txt", "w")
