@@ -3,11 +3,14 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import mplcyberpunk
 
+# Time period in seconds.
 time_period = 0.1
 data_files = [
     "sunny_afternoon_direct_light.txt",
     "sunny_afternoon_hard_blinds.txt",
     "sunny_afternoon_light_blinds.txt",
+    "night_no_indoor_lights.txt",
+    "night_all_indoor_lights_on.txt",
 ]
 
 # Style it up.
