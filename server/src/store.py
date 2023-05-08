@@ -20,7 +20,7 @@ class PullUp:
         self._spreadsheet_id = spreadsheet_id
 
     def store(self,
-              pull_up_bar_update: interface.PullUpBarUpdate) -> str:
+              pull_up_bar_request: interface.PullUpBarRequest) -> str:
         # The sheet service expects a range in the form of:
         # <Sheet Tab Name>!<Cell Range>.
         # Example 1: Exercise!A2
@@ -37,11 +37,11 @@ class PullUp:
         
         days_delta = self._compute_day_difference(
             first_date=first_date,
-            update_date=pull_up_bar_update.date)
+            update_date=pull_up_bar_request.date)
         
         self._upsert_pull_up_data(
             days_delta=days_delta,
-            pull_up_count=pull_up_bar_update.pull_up_count)
+            pull_up_count=pull_up_bar_request.pull_up_count)
         return first_date
     
     def _upsert_pull_up_data(self, 

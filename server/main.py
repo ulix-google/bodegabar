@@ -17,13 +17,13 @@ def get_settings():
     return config.Settings()
 
 @app.get("/items/")
-async def upsert_pull_up_data(pull_up_bar_update: interface.PullUpBarUpdate | None = None,
+async def upsert_pull_up_data(pull_up_bar_request: interface.PullUpBarRequest | None = None,
                               settings: Annotated[config.Settings, 
                                           Depends(get_settings)] = None):
     pull_up = get_pull_up_store(spreadsheet_id=settings.spreadsheet_id,
                                 sheet_tab_name=settings.sheet_tab_name)
-    pull_up_bar_update = interface.PullUpBarUpdate(
+    pull_up_bar_request = interface.PullUpBarRequest(
         date="5/7/23",
         pull_up_count=17)
-    return pull_up.store(pull_up_bar_update=pull_up_bar_update)
+    return pull_up.store(pull_up_bar_request=pull_up_bar_request)
    
