@@ -6,9 +6,29 @@ from datetime import datetime
 from . import utils, interface
 
 class PullUp:
+    """Storage related functionality for Pull Ups.
+
+    PullUp has functionality for handling the storage of pull up data by
+    persisting it in a Google Sheet in the appropriate cell(s).
+
+    Attributes:
+        sheet_tab_name: A string representing the name of the tab sheet in
+          which pull up data is stored. 
+        spreadsheet_id: A string representing the spreadsheet ID which
+          contains the sheet which stores pull up data.
+    """
+
     def __init__(self,
                  sheet_tab_name: str, 
                  spreadsheet_id: str):
+        """Initializes the instance with the provided Google Sheet metadata.
+
+        Args:
+          sheet_tab_name: The name of the tab sheet in which pull up data is
+            stored. 
+          spreadsheet_id: The spreadsheet ID which contains the sheet which
+            stores pull up data.
+        """
         credentials, _ = google.auth.default()
         service_resource = discovery.build('sheets',
                                            'v4',
@@ -21,6 +41,18 @@ class PullUp:
 
     def store(self,
               pull_up_bar_request: interface.PullUpBarRequest) -> str:
+        """Handles a pull up bar request.
+
+        store handles a pull up bar request, by figuring out the cell that
+        will be the recepeint of the updates, and then upserting the pull up
+        data.
+
+        Args:
+            pull_up_bar_request: a pull up bar request.
+
+        Returns:
+            TBD
+        """
         # The sheet service expects a range in the form of:
         # <Sheet Tab Name>!<Cell Range>.
         # Example 1: Exercise!A2
@@ -67,7 +99,8 @@ class PullUp:
         d0 = datetime.strptime(first_date, DATE_FORMAT)
         d1 = datetime.strptime(update_date, DATE_FORMAT)
         days_delta = d1 - d0
-        logging.getLogger().info(f"Days between first and update date: {days_delta}")
+        logging.getLogger().info(
+            f"Days between first and update date: {days_delta}")
         return days_delta.days
     
     def _validate_first_date_value(self, values) -> str:
