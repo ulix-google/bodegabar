@@ -12,6 +12,12 @@ Example of a distance sensor using a 3D printed mount (to be used to detect hand
 
 ![right hand sensor](static/right_hand_sensor.gif)
 
+### Experiment: All signals
+
+The distinct sensors are able to provide strong signals that can be used to detect a pull up.
+
+![all signals](static/all_signals_with_push_up.png)
+
 ### Experiments: Hand Sensor
 
 The distance sensor is able to clearly detect the hand under different lighting conditions.
