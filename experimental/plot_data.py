@@ -13,7 +13,10 @@ class DataFile:
 # Time period in seconds.
 time_period = 0.1
 data_files = [
-    DataFile("sunny_afternoon_direct_light.txt", "gold"),
+    DataFile(
+        "/home/bodegapi4/git/bodegabar/experimental/data/rp_adc_night_all_indoor_lights.txt.txt",
+        "gold",
+    ),
     DataFile("sunny_afternoon_hard_blinds.txt", "orange"),
     DataFile("sunny_afternoon_light_blinds.txt", "lightyellow"),
     DataFile("night_no_indoor_lights.txt", "violet"),
