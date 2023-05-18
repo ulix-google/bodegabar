@@ -5,6 +5,15 @@ from src import sensor, detect, store
 
 
 class Config:
+    """Setup configuration used by the application.
+
+    Initializes and provides handles to the distinct clients and objects
+    needed by the bodegabar application.
+
+    Attributes:
+        None
+    """
+
     def __init__(self):
         # Load a .env file which should hold variables for the pull up service in the
         # following format:
