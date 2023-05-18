@@ -1,29 +1,19 @@
-from functools import lru_cache
-from fastapi import FastAPI, Depends
-from src import store, config, log, interface
-from typing_extensions import Annotated
+import logging
+from time import sleep, time
+
+import config
+from src import log
 
 log.configure_logging()
-app = FastAPI()
+cfg = config.Config()
+target_time = time()
 
-@lru_cache()
-def get_pull_up_store(sheet_tab_name: str, 
-                      spreadsheet_id: str):
-    return store.PullUp(spreadsheet_id=spreadsheet_id,
-                        sheet_tab_name=sheet_tab_name)
-
-@lru_cache()
-def get_settings():
-    return config.Settings()
-
-@app.get("/items/")
-async def upsert_pull_up_data(pull_up_bar_request: interface.PullUpBarRequest | None = None,
-                              settings: Annotated[config.Settings, 
-                                          Depends(get_settings)] = None):
-    pull_up = get_pull_up_store(spreadsheet_id=settings.spreadsheet_id,
-                                sheet_tab_name=settings.sheet_tab_name)
-    pull_up_bar_request = interface.PullUpBarRequest(
-        date="5/7/23",
-        pull_up_count=17)
-    return pull_up.store(pull_up_bar_request=pull_up_bar_request)
-   
+while True:
+    try:
+        target_time += cfg.time_period
+        cfg.sensors.handle_samples()
+        cfg.detector.handle()
+        # Try to maintain loop period.
+        sleep(max(0, (target_time - time())))
+    except Exception as err:
+        logging.getLogger().error(f"Unexpected {err=}, {type(err)=}")
