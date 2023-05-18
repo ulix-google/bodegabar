@@ -1,8 +1,15 @@
-import numpy as np
+import os
+import sys
+from pathlib import Path
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import mplcyberpunk
 from typing import List
+
+file = Path(__file__).resolve()
+parent, root = file.parent, file.parents[1]
+sys.path.append(str(root))
+from server.src import sma
 
 
 class DataFile:
@@ -11,35 +18,14 @@ class DataFile:
         self.filename = filename
 
 
-class SMA:
-    def __init__(self, buffer_window_length: float, time_period: float) -> None:
-        self.buffer = [0] * int(buffer_window_length / time_period)
-        self.buffer_ready = False
-        self.buffer_pointer = 0
-        self.cum_sum = 0
-        self.average = None
-
-    def insert(self, value) -> None:
-        self.cum_sum += value
-        self.cum_sum -= self.buffer[self.buffer_pointer]
-        self.buffer[self.buffer_pointer] = value
-        self.buffer_pointer += 1
-        if self.buffer_pointer >= len(self.buffer):
-            self.buffer_pointer = 0
-            if self.buffer_ready is False:
-                self.buffer_ready = True
-        self._compute_average()
-
-    def _compute_average(self):
-        if self.buffer_ready:
-            self.average = self.cum_sum / len(self.buffer)
-
-
 # Time period in seconds.
 time_period = 0.05
 data_files = [
     DataFile(
-        r"data\rp_averaged_night_all_indoor_lights_run_010.txt",
+        os.path.join(
+            root,
+            r"experimental\data\rp_averaged_night_all_indoor_lights_run_010.txt",
+        ),
         ["gold", "orange", "violet"],
     ),
 ]
@@ -87,7 +73,7 @@ for data_file in data_files:
 buffer_window_length = 3
 moving_averages = {}
 for header in headers:
-    moving_averages[header] = SMA(buffer_window_length, time_period)
+    moving_averages[header] = sma.SMA(buffer_window_length, time_period)
 
 average_time_vector = []
 averaged_data = defaultdict(list)
@@ -115,7 +101,6 @@ for j in range(1, len(headers)):
     print(f"{headers[j]} true_mean: {true_mean}")
     print(f"{headers[j]} error: {abs(true_mean - moving_averages[headers[j]].average)}")
 
-# plt.xlim([0, 60])
 plt.ylim([-5000, 85000])
 plt.legend(loc="upper left")
 # Make it beautiful.
