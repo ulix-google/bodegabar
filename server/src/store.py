@@ -1,7 +1,7 @@
 import logging
 import google.auth
-from googleapiclient import discovery
 from datetime import datetime
+from googleapiclient import discovery
 
 from . import utils, interface
 
@@ -36,7 +36,10 @@ class PullUp:
         self._sheet_tab_name = sheet_tab_name
         self._spreadsheet_id = spreadsheet_id
 
-    def store(self, pull_up_bar_request: interface.PullUpBarRequest) -> str:
+    def store(
+        self,
+        pull_up_bar_request: interface.PullUpBarRequest,
+    ) -> str:
         """Handles a pull up bar request.
 
         store handles a pull up bar request, by figuring out the cell that
@@ -69,14 +72,21 @@ class PullUp:
         )
 
         self._upsert_pull_up_data(
-            days_delta=days_delta, pull_up_count=pull_up_bar_request.pull_up_count
+            days_delta=days_delta,
+            pull_up_count=pull_up_bar_request.pull_up_count,
+            pull_up_type=pull_up_bar_request.pull_up_type,
         )
         return first_date
 
-    def _upsert_pull_up_data(self, days_delta: int, pull_up_count: int) -> None:
+    def _upsert_pull_up_data(
+        self,
+        days_delta: int,
+        pull_up_count: int,
+        pull_up_type: interface.PullUpType = interface.PullUpType.PullUp,
+    ) -> None:
         # Move to the right column relative to the `Date` column, which
         # corresponds to the Pull-Up count column.
-        right_column = chr(ord(self.FIRST_DATE_COLUMN) + 1)
+        right_column = chr(ord(self.FIRST_DATE_COLUMN) + pull_up_type.value)
         pull_up_cell = right_column + str(days_delta + int(self.FIRST_DATE_ROW))
         logging.getLogger().info(f"Writing to cell: {pull_up_cell}")
         pull_up_range = self._sheet_tab_name + "!" + pull_up_cell

@@ -16,6 +16,7 @@ class Detector:
         self.previous_strain_signal = None
         self.pull_up_count = 0
         self.pull_up_service = pull_up_service
+        self.pull_up_type = interface.PullUpType.PullUp
 
     def _store_state(self):
         self.previous_head_signal = self.sensors.sma[sensor.HEAD_SIGNAL].average
@@ -23,43 +24,56 @@ class Detector:
             sensor.STRAIN_GAUGE_SIGNAL
         ].average
 
-    def handle(self):
+    def _detect(self):
         if self.previous_head_signal is None:
-            self._store_state()
             return
 
+        # Check if a pull up was detected.
         if (
             self.previous_head_signal > HEAD_THRESHOLD
             and self.sensors.sma[sensor.HEAD_SIGNAL].average < HEAD_THRESHOLD
-            and self.sensors.sma[sensor.RIGHT_HAND_SIGNAL].average
-            > RIGHT_HAND_THRESHOLD
             and self.sensors.sma[sensor.STRAIN_GAUGE_SIGNAL].average
             < STRAIN_GAUGE_THRESHOLD
         ):
             self.pull_up_count += 1
+            # Identify the type of pull up.
+            if (
+                self.sensors.sma[sensor.RIGHT_HAND_SIGNAL].average
+                < RIGHT_HAND_THRESHOLD
+            ):
+                self.pull_up_type = interface.PullUpType.ChinUp
+                logging.getLogger().info(
+                    f"Chin-up detected! Count so far: {self.pull_up_count}."
+                )
+                return
+
+            self.pull_up_type = interface.PullUpType.PullUp
             logging.getLogger().info(
-                f"Push-up detected! Count so far: {self.pull_up_count}."
+                f"Pull-up detected! Count so far: {self.pull_up_count}."
             )
-            self._store_state()
             return
 
+        # Check if the user stopped hanging from the pull up bar.
         if (
             self.previous_strain_signal < STRAIN_GAUGE_THRESHOLD
             and self.sensors.sma[sensor.STRAIN_GAUGE_SIGNAL].average
             > STRAIN_GAUGE_THRESHOLD
         ):
             logging.getLogger().info(
-                f"Logging a total of {self.pull_up_count} pull ups."
+                f"Logging a total of {self.pull_up_count} {self.pull_up_type.name}."
             )
-            self._store_state()
             pull_up_bar_request = interface.PullUpBarRequest(
                 date=datetime.today().strftime("%m/%d/%y"),
                 pull_up_count=self.pull_up_count,
+                pull_up_type=self.pull_up_type,
             )
             if self.pull_up_count > 0:
                 self.pull_up_service.store(pull_up_bar_request)
             self.pull_up_count = 0
             return
+        return
 
+    def handle(self):
+        self._detect()
         self._store_state()
         return
